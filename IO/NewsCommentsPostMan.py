@@ -8,15 +8,15 @@ class PostMan(object):
     def AssignMailBox(self, ipAddr, port):
         try:
             self.mailBox.connect((ipAddr, port))
-        except:
-            print("connection to: %s::%d failed" % (ipAddr, port))
+        except ConnectionRefusedError:
+            print("connection to: %s::%d refused" % (ipAddr, port))
             self.assignedMailBox = False
         else:
             self.assignedMailBox = True
 
     def PutLetter(self, letter):
         if self.assignedMailBox:
-            self.mailBox.sendall(letter)
+            self.mailBox.sendall(letter.encode('utf-8'))
 
     def Byebye(self):
         self.mailBox.close()
