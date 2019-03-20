@@ -1,22 +1,23 @@
 import socket
 
-class Processor(object):
+class Receiver(object):
     def __init__(self):
         self.mailBox = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
-    def BindMailBox(self, ipAddr, port):
+    def ReceivLetters(self, ipAddr, port):
         try:
             self.mailBox.bind((ipAddr, port))
         except:
-            print("binding port %d failed" % port)
-            return False
+            print("binding %s:%d failed" % (ipAddr, port))
         else:
-            return True
-
-    def ReceivLetter(self):
-
-        self.mailBox.listen(5)
-        postMan, addr = self.mailBox.accept()
-        letter = postMan.recv(1000)
-        postMan.close()
-        return letter.decode("utf-8")
+            self.mailBox.listen(1)
+            postMan, addr = self.mailBox.accept()
+            letters = []
+            while True:
+                letter = postMan.recv(1024)
+                if not letter:
+                    break
+                letters.append(letter.decode("utf-8"))
+                postMan.sendall(b"You can send letters now")
+            self.mailBox.close()
+            return letters
